@@ -1,0 +1,42 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "sno": "01",
+      "username": "emazakhtar",
+      "password": "EmazAkhtar1@"
+    }
+  ],
+  "employee": [
+    {
+      "id": 1,
+      "name": "Amit",
+      "email": "hjhjnnefe",
+      "mobile": 9898989898454,
+      "designation": "hjhjnn",
+      "gender": "make",
+      "course": "mhjk",
+      "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s"
+    },
+    {
+      "id": 2,
+      "name": "Jain",
+      "email": "hjhjnnefe",
+      "mobile": 9898989898454,
+      "designation": "hjhjnn",
+      "gender": "make",
+      "course": "mhjk",
+      "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s"
+    },
+    {
+      "id": 3,
+      "name": "Kumar",
+      "email": "hjhjnnefe",
+      "mobile": 9898989898454,
+      "designation": "hjhjnn",
+      "gender": "make",
+      "course": "mhjk",
+      "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s"
+    }
+  ]
+}
