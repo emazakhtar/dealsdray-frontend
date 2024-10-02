@@ -12,11 +12,12 @@ const initialState = {
 
 export const loginUserAsync = createAsyncThunk(
   "auth/loginUser",
-  async (data, { rejectWithValue }) => {
+  async ({ data, alert }, { rejectWithValue }) => {
     try {
       const response = await loginUser(data);
       return response.data;
     } catch (error) {
+      alert.error("Invalid Credentials");
       return rejectWithValue(error);
     }
   }

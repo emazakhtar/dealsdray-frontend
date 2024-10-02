@@ -1,12 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   addEmployee,
+  deleteEmployeeById,
   fetchAllEmployee,
+  fetchEmployeeById,
   updateEmployeeById,
 } from "./employeeAPI";
 
 const initialState = {
   employees: [],
+  selectedEmployee: null,
   status: "idle",
   totalItems: 0,
   error: null,
@@ -14,11 +17,9 @@ const initialState = {
 
 export const updateEmployeeByIdAsync = createAsyncThunk(
   "employee/updateEmployeeById",
-  async ({ employee, alert }, { rejectWithValue }) => {
-    const response = await updateEmployeeById(employee);
-
+  async ({ employee, id, alert }, { rejectWithValue }) => {
+    const response = await updateEmployeeById(employee, id);
     alert.success("Employee Edited");
-
     return response.data;
   }
 );
@@ -33,8 +34,9 @@ export const fetchAllEmployeesAsync = createAsyncThunk(
 
 export const deleteEmployeeByIdAsync = createAsyncThunk(
   "employee/deleteEmployeeById",
-  async (id) => {
-    const response = await deleteEmployeeByIdAsync(id);
+  async ({ id, alert }) => {
+    const response = await deleteEmployeeById(id);
+    alert.success("employee deleted");
     return response.data;
   }
 );
@@ -54,7 +56,13 @@ export const addEmployeeAsync = createAsyncThunk(
     }
   }
 );
-
+export const fetchEmployeeByIdAsync = createAsyncThunk(
+  "employee/fetchEmployeeById",
+  async (id) => {
+    const response = await fetchEmployeeById(id);
+    return response.data;
+  }
+);
 export const employeeSlice = createSlice({
   name: "employee",
   initialState,
@@ -98,19 +106,29 @@ export const employeeSlice = createSlice({
       .addCase(deleteEmployeeByIdAsync.fulfilled, (state, action) => {
         state.status = "idle";
         const removedEmployeeIndex = state.employees.findIndex(
-          (emp) => emp._id === action.payload.id
+          (emp) => emp._id === action.payload._id
         );
-        state.items.splice(removedEmployeeIndex, 1);
+        state.employees.splice(removedEmployeeIndex, 1);
       })
       .addCase(deleteEmployeeByIdAsync.rejected, (state, action) => {
         state.status = "rejected";
         console.log("Add employee error:", action.payload);
         state.error = action.payload;
+      })
+      .addCase(fetchEmployeeByIdAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchEmployeeByIdAsync.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.selectedEmployee = action.payload;
       });
   },
 });
 
 export const selectAllEmployees = (state) => state.employee.employees;
 export const selectEmployeeError = (state) => state.employee.error;
+export const selectSelectedEmployee = (state) =>
+  state.employee.selectedEmployee;
+export const selectEmployeeStatus = (state) => state.employee.status;
 
 export default employeeSlice.reducer;

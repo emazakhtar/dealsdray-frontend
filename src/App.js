@@ -52,7 +52,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/edit-employee-form",
+    path: "/edit-employee-form/:id",
     element: (
       <Protected>
         <Navbar>

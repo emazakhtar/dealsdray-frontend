@@ -6,11 +6,16 @@ import {
   deleteEmployeeByIdAsync,
   fetchAllEmployeesAsync,
   selectAllEmployees,
+  selectEmployeeStatus,
 } from "../employeeSlice";
+import { useAlert } from "react-alert";
+import { Grid } from "react-loader-spinner";
 
 const EmployeeList = () => {
   const dispatch = useDispatch();
   const initialEmployees = useSelector(selectAllEmployees);
+  const alert = useAlert();
+  const status = useSelector(selectEmployeeStatus);
 
   useEffect(() => {
     dispatch(fetchAllEmployeesAsync());
@@ -42,9 +47,9 @@ const EmployeeList = () => {
   // Handle Delete
   const handleDelete = (id) => {
     setEmployees((prevEmployees) =>
-      prevEmployees.filter((emp) => emp._id !== id)
+      prevEmployees.filter((emp) => emp && emp._id !== id)
     );
-    dispatch(deleteEmployeeByIdAsync(id));
+    dispatch(deleteEmployeeByIdAsync({ id: id, alert }));
   };
 
   // Pagination Logic
@@ -70,6 +75,22 @@ const EmployeeList = () => {
 
   return (
     <div className="container mx-auto mt-4">
+      {status === "loading" ? (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          {/* Loader component */}
+          <Grid
+            className="loader"
+            height="80"
+            width="80"
+            color="#4fa94d"
+            ariaLabel="grid-loading"
+            radius="12.5"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      ) : null}
       {/* Search Filter */}
       <div className="mb-4">
         <input
@@ -108,6 +129,11 @@ const EmployeeList = () => {
             >
               Email
             </th>
+            <th className="cursor-pointer px-4 py-2">Mobile</th>
+            <th className="cursor-pointer px-4 py-2">Designation</th>
+            <th className="cursor-pointer px-4 py-2">Gender</th>
+            <th className="cursor-pointer px-4 py-2">Course</th>
+
             <th
               onClick={() => sortBy("createDate")}
               className="cursor-pointer px-4 py-2"
@@ -124,7 +150,13 @@ const EmployeeList = () => {
               <td className="px-4 py-2">{emp._id}</td>
               <td className="px-4 py-2">{emp.name}</td>
               <td className="px-4 py-2">{emp.email}</td>
-              <td className="px-4 py-2">{emp.createDate}</td>
+              <td className="px-4 py-2">{emp.mobile}</td>
+              <td className="px-4 py-2">{emp.designation}</td>
+              <td className="px-4 py-2">{emp.gender}</td>
+              <td className="px-4 py-2">{emp.course}</td>
+              <td className="px-4 py-2">
+                {new Date(emp.createdAt).toLocaleString()}
+              </td>
               <td className="px-4 py-2">
                 <button
                   onClick={() => toggleActive(emp.id)}
@@ -139,7 +171,7 @@ const EmployeeList = () => {
               </td>
               <td className="px-4 py-2">
                 {/* edit employeee button  */}
-                <Link to={"/edit-employee-form"}>
+                <Link to={`/edit-employee-form/${emp._id}`}>
                   <button className="text-blue-500 mr-2">Edit</button>
                 </Link>
                 {/* delete employeee button */}

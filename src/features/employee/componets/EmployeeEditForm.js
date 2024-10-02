@@ -1,11 +1,20 @@
 // src/components/UpdateEmployeeForm.js
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import {
+  fetchEmployeeByIdAsync,
+  selectEmployeeStatus,
+  selectSelectedEmployee,
+  updateEmployeeByIdAsync,
+} from "../employeeSlice";
+import { useAlert } from "react-alert";
+import { Grid } from "react-loader-spinner";
 
-const UpdateEmployeeForm = ({
-  employeeData,
-  existingEmails,
-  onUpdateEmployee,
-}) => {
+const UpdateEmployeeForm = ({ existingEmails, onUpdateEmployee }) => {
+  const alert = useAlert();
+  const status = useSelector(selectEmployeeStatus);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,8 +29,16 @@ const UpdateEmployeeForm = ({
     createDate: "",
     image: null,
   });
+  const dispatch = useDispatch();
+  const params = useParams();
 
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    dispatch(fetchEmployeeByIdAsync(params.id));
+  }, [dispatch, params]);
+
+  const employeeData = useSelector(selectSelectedEmployee);
 
   useEffect(() => {
     if (employeeData) {
@@ -36,7 +53,6 @@ const UpdateEmployeeForm = ({
           BCA: employeeData.courses.BCA,
           BSC: employeeData.courses.BSC,
         },
-        createDate: employeeData.createDate,
         image: null, // Keep this null for file input
       });
     }
@@ -52,8 +68,6 @@ const UpdateEmployeeForm = ({
       newErrors.email = "Email is required.";
     } else if (!emailPattern.test(formData.email)) {
       newErrors.email = "Email format is invalid.";
-    } else if (existingEmails.includes(formData.email)) {
-      newErrors.email = "Email is already taken.";
     }
 
     if (!formData.mobile) {
@@ -65,7 +79,6 @@ const UpdateEmployeeForm = ({
     if (!formData.designation)
       newErrors.designation = "Designation is required.";
     if (!formData.gender) newErrors.gender = "Gender is required.";
-    if (!formData.createDate) newErrors.createDate = "Create date is required.";
 
     if (formData.image) {
       const fileExtension = formData.image.name.split(".").pop();
@@ -100,9 +113,17 @@ const UpdateEmployeeForm = ({
   };
 
   const handleSubmit = (e) => {
+    console.log("hjhjhjh");
     e.preventDefault();
     if (validate()) {
-      onUpdateEmployee(formData);
+      console.log("/.........");
+      dispatch(
+        updateEmployeeByIdAsync({
+          employee: formData,
+          id: employeeData._id,
+          alert,
+        })
+      );
       setFormData({
         name: "",
         email: "",
@@ -110,7 +131,6 @@ const UpdateEmployeeForm = ({
         designation: "",
         gender: "",
         courses: { MCA: false, BCA: false, BSC: false },
-        createDate: "",
         image: null,
       });
       setErrors({});
@@ -119,9 +139,25 @@ const UpdateEmployeeForm = ({
 
   return (
     <div className="bg-gray-100 p-8">
+      {status === "loading" ? (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          {/* Loader component */}
+          <Grid
+            className="loader"
+            height="80"
+            width="80"
+            color="#4fa94d"
+            ariaLabel="grid-loading"
+            radius="12.5"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      ) : null}
       <h2 className="text-2xl font-bold mb-4 text-center">Update Employee</h2>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) => handleSubmit(e)}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
       >
         {/* Name */}
@@ -306,29 +342,6 @@ const UpdateEmployeeForm = ({
             />
             <span className="ml-2">BSC</span>
           </label>
-        </div>
-
-        {/* Create Date */}
-        <div className="flex items-center mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mr-4"
-            htmlFor="createDate"
-          >
-            Create Date
-          </label>
-          <input
-            type="date"
-            name="createDate"
-            value={formData.createDate}
-            onChange={handleChange}
-            required
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.createDate ? "border-red-500" : ""
-            }`}
-          />
-          {errors.createDate && (
-            <p className="text-red-500 text-xs italic">{errors.createDate}</p>
-          )}
         </div>
 
         {/* Image Upload */}

@@ -1,20 +1,18 @@
-export function updateEmployeeById(updatedEmployee) {
+export function updateEmployeeById(updatedEmployee, id) {
   return new Promise(async (resolve) => {
     // TODO: we will not hardcode server url here
-    const response = await fetch(
-      "/employee/update-employee" + updatedEmployee.id,
-      {
-        method: "PATCH",
-        credentials: "include",
-        body: JSON.stringify(updatedEmployee),
-        headers: { "content-type": "application/json" },
-      }
-    );
+    const response = await fetch("/employee/update-employee/" + id, {
+      method: "PATCH",
+      credentials: "include",
+      body: JSON.stringify(updatedEmployee),
+      headers: { "content-type": "application/json" },
+    });
 
     const data = await response.json();
     resolve({ data });
   });
 }
+
 export function addEmployee(employee) {
   return new Promise(async (resolve, reject) => {
     // TODO: we will not hardcode server url here
@@ -42,7 +40,7 @@ export function addEmployee(employee) {
 export function fetchAllEmployee() {
   return new Promise(async (resolve) => {
     // TODO: we will not hardcode server url here
-    const response = await fetch("/employee/get-employee", {
+    const response = await fetch("/employee/get-employees", {
       method: "GET",
       credentials: "include",
       headers: { "content-type": "application/json" },
@@ -55,7 +53,7 @@ export function fetchAllEmployee() {
 export function deleteEmployeeById(id) {
   return new Promise(async (resolve, reject) => {
     // TODO: we will not hardcode server url here
-    const response = await fetch("/employee/delete-employee" + id, {
+    const response = await fetch("/employee/delete-employee/" + id, {
       method: "DELETE",
       credentials: "include",
     });
@@ -66,5 +64,17 @@ export function deleteEmployeeById(id) {
       const error = await response.json();
       reject(error);
     }
+  });
+}
+
+export function fetchEmployeeById(id) {
+  return new Promise(async (resolve) => {
+    // TODO: we will not hardcode server url here
+    const response = await fetch("/employee/get-employee/" + id, {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await response.json();
+    resolve({ data });
   });
 }

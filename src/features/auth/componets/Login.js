@@ -7,6 +7,7 @@ import {
 } from "../authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import { useAlert } from "react-alert";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -15,6 +16,7 @@ const Login = () => {
   const error = useSelector(selectError);
   const userLogggedInToken = useSelector(selectLoggedInUserToken);
   const dispatch = useDispatch();
+  const alert = useAlert();
 
   if (userLogggedInToken) {
     return <Navigate to="/dashboard" replace={true}></Navigate>;
@@ -23,7 +25,7 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     const data = { username: username, password: password };
-    dispatch(loginUserAsync(data));
+    dispatch(loginUserAsync({ data: data, alert }));
   };
 
   return (
